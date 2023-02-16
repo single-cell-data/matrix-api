@@ -185,7 +185,7 @@ class NDArray(base.SOMAObject, metaclass=abc.ABCMeta):
         uri: str,
         *,
         type: pa.DataType,
-        shape: Sequence[int],
+        shape: Sequence[Union[int, None]],
         platform_config: Optional[options.PlatformConfig] = None,
         context: Optional[Any] = None,
     ) -> Self:
@@ -196,7 +196,10 @@ class NDArray(base.SOMAObject, metaclass=abc.ABCMeta):
         :param type: The Arrow type to store in the array.
             If the type is unsupported, an error will be raised.
         :param shape: The length of each dimension as a sequence,
-            e.g. ``(100, 10)``. All lengths must be in the postive int64 range.
+            e.g. ``(100, 10)``. All lengths must be in the postive int64 range,
+            or `None`.  If a slot is `None` -- only supported for
+            `SparseNDArray`, not `DenseNDArray` -- then 2**63-1 will be used.
+            This makes a `SparseNDArray` growable.
         """
         raise NotImplementedError()
 
@@ -339,8 +342,6 @@ class SparseNDArray(NDArray, metaclass=abc.ABCMeta):
 
             some_dense_array.read(...).tables()
             # -> an iterator of Arrow Tables
-            some_dense_array.read(...).csrs().all()
-            # -> a single flattened sparse CSR matrix
 
         :param coords: A per-dimension sequence of coordinates defining
             the range to be read.
@@ -453,15 +454,6 @@ class SparseRead:
     """
 
     __slots__ = ()
-
-    def coos(self) -> ReadIter[pa.SparseCOOTensor]:
-        raise NotImplementedError()
-
-    def cscs(self) -> ReadIter[pa.SparseCSCMatrix]:
-        raise NotImplementedError()
-
-    def csrs(self) -> ReadIter[pa.SparseCSRMatrix]:
-        raise NotImplementedError()
 
     def dense_tensors(self) -> ReadIter[pa.Tensor]:
         raise NotImplementedError()
