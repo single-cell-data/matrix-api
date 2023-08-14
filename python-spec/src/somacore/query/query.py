@@ -27,6 +27,7 @@ from .. import options
 from . import _fast_csr
 from . import axis
 
+
 _RO_AUTO = options.ResultOrder.AUTO
 
 
