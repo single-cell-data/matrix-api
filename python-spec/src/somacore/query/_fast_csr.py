@@ -8,6 +8,7 @@ import numpy as np
 import numpy.typing as npt
 import pandas as pd
 import pyarrow as pa
+import time
 from scipy import sparse
 
 from .. import data as scd
@@ -258,10 +259,12 @@ def _read_csr(
     npt.NDArray[np.integer],  # indices
     Tuple[int, int],  # shape
 ]:
+    print(f"data shape {matrix.shape} nnz {matrix.nnz} obs_joinids {len(obs_joinids)} var_joinids {len(var_joinids)}")
     if not isinstance(matrix, scd.SparseNDArray) or matrix.ndim != 2:
         raise TypeError("Can only read from a 2D SparseNDArray")
 
     max_workers = (os.cpu_count() or 4) + 2
+    t1 = time.perf_counter()
     with futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
         acc = _CSRAccumulator(
             obs_joinids=obs_joinids, var_joinids=var_joinids, pool=pool
@@ -271,9 +274,11 @@ def _read_csr(
             pool=pool,
         ):
             acc.append(tbl["soma_dim_0"], tbl["soma_dim_1"], tbl["soma_data"])
+        t2 = time.perf_counter()
 
         data, indptr, indices, shape = acc.finalize()
-
+        t3 = time.perf_counter()
+    print(f"Time for reading and appending {t2 - t1} and Time for finalizing {t3 - t2}")
     return data, indptr, indices, shape
 
 
