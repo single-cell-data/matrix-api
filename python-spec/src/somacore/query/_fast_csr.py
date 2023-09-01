@@ -10,6 +10,9 @@ import pandas as pd
 import pyarrow as pa
 import time
 from scipy import sparse
+import tiledbsoma as soma
+import itertools
+
 
 from .. import data as scd
 from . import _eager_iter
@@ -22,7 +25,10 @@ def read_scipy_csr(
     Given a 2D SparseNDArray and joinids for the two dimensions, read the
     slice and return it as an SciPy sparse.csr_matrix.
     """
-    data, indptr, indices, shape = _read_csr(matrix, obs_joinids, var_joinids)
+    data, indptr, indices, shape = _read_csr_cpp(matrix, obs_joinids, var_joinids)
+    print(f"INPTR = {indptr} indptr = {indices} indices {indices} shape {shape}")
+    print(f"Type INPTR = {type(indptr)} indptr = {type(indices)} indices {type(indices)} shape {type(shape)}")
+
     csr = _create_scipy_csr_matrix(data, indices, indptr, shape=shape)
     return csr
 
@@ -35,6 +41,9 @@ def read_arrow_csr(
     slice and return it as a pyarrow.SparseCSRMatrix.
     """
     data, indptr, indices, shape = _read_csr(matrix, obs_joinids, var_joinids)
+    print(f"INPTR = {indptr} indptr = {indices} indices {indices} shape {shape}")
+    print(f"Type INPTR = {type(indptr)} indptr = {type(indices)} indices {type(indices)} shape {type(shape)}")
+
     csr = pa.SparseCSRMatrix.from_numpy(data, indptr, indices, shape=shape)
     return csr
 
@@ -281,6 +290,49 @@ def _read_csr(
     print(f"Time for reading and appending {t2 - t1} and Time for finalizing {t3 - t2}")
     return data, indptr, indices, shape
 
+
+def _read_csr_cpp(
+    matrix: scd.SparseNDArray, obs_joinids: pa.Array, var_joinids: pa.Array
+) -> Tuple[
+    npt.NDArray[np.number],  # data
+    npt.NDArray[np.integer],  # indptr
+    npt.NDArray[np.integer],  # indices
+    Tuple[int, int],  # shape
+]:
+    print(f"CPP data shape {matrix.shape} nnz {matrix.nnz} obs_joinids {len(obs_joinids)} var_joinids {len(var_joinids)}")
+    t1 = time.perf_counter()
+    if not isinstance(matrix, scd.SparseNDArray) or matrix.ndim != 2:
+        raise TypeError("Can only read from a 2D SparseNDArray")
+
+    all_data = matrix.read((obs_joinids, var_joinids)).tables().concat()
+    """
+    max_workers = (os.cpu_count() or 4) + 2
+    pool = futures.ThreadPoolExecutor(max_workers=max_workers)
+    tbl = [tbl
+                for tbl in _eager_iter.EagerIterator(
+            matrix.read((obs_joinids, var_joinids)).tables(),
+            pool=pool,
+        )]
+
+    #all_data = itertools.accumulate(tbl, pa.Table.concat_tables)
+    all_data = pa.concat_tables(tbl)
+    """
+
+    t2 = time.perf_counter()
+    print(f"DATA READ {t2 - t1}")
+    row_indexes = all_data["soma_dim_0"]
+    col_indexes = all_data["soma_dim_1"]
+    data = all_data["soma_data"]
+    print(f"RUNNING CPP {len(data)} {len(row_indexes)} {len(col_indexes)} types {type(row_indexes)} type {type(col_indexes)} data {type(data)}")
+
+    data, indptr, indices, shape = soma.coo_2_csr(row_indexes, col_indexes, data)
+    print("DONE")
+    print (f"RESULT {data} {indptr} {indices} {shape}")
+    return data, indptr, indices, shape
+    #     data, indptr, indices, shape = acc.finalize()
+    #     t3 = time.perf_counter()
+    # print(f"Time for reading and appending {t2 - t1} and Time for finalizing {t3 - t2}")
+    #return data, indptr, indices, shape
 
 def _create_scipy_csr_matrix(
     data: npt.NDArray[np.number],
