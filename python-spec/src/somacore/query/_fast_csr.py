@@ -12,11 +12,13 @@ import time
 from scipy import sparse
 import tiledbsoma as soma
 import itertools
-
+import sys
 
 from .. import data as scd
 from . import _eager_iter
 
+# "cpp", "serial", "fast"
+alg_type = "cpp"
 
 def read_scipy_csr(
     matrix: scd.SparseNDArray, obs_joinids: pa.Array, var_joinids: pa.Array
@@ -25,9 +27,12 @@ def read_scipy_csr(
     Given a 2D SparseNDArray and joinids for the two dimensions, read the
     slice and return it as an SciPy sparse.csr_matrix.
     """
-    data, indptr, indices, shape = _read_csr_cpp(matrix, obs_joinids, var_joinids)
-    print(f"INPTR = {indptr} indptr = {indices} indices {indices} shape {shape}")
-    print(f"Type INPTR = {type(indptr)} indptr = {type(indices)} indices {type(indices)} shape {type(shape)}")
+    if alg_type == "serial":
+        data, indptr, indices, shape = _read_csr_serial(matrix, obs_joinids, var_joinids)
+    elif alg_type == "cpp":
+        data, indptr, indices, shape = _read_csr_cpp(matrix, obs_joinids, var_joinids)
+    else:
+        data, indptr, indices, shape = _read_csr(matrix, obs_joinids, var_joinids)
 
     csr = _create_scipy_csr_matrix(data, indices, indptr, shape=shape)
     return csr
@@ -40,7 +45,13 @@ def read_arrow_csr(
     Given a 2D SparseNDArray and joinids for the two dimensions, read the
     slice and return it as a pyarrow.SparseCSRMatrix.
     """
-    data, indptr, indices, shape = _read_csr(matrix, obs_joinids, var_joinids)
+    if alg_type == "serial":
+        data, indptr, indices, shape = _read_csr_serial(matrix, obs_joinids, var_joinids)
+    elif alg_type == "cpp":
+        data, indptr, indices, shape = _read_csr_cpp(matrix, obs_joinids, var_joinids)
+    else:
+        data, indptr, indices, shape = _read_csr(matrix, obs_joinids, var_joinids)
+
     print(f"INPTR = {indptr} indptr = {indices} indices {indices} shape {shape}")
     print(f"Type INPTR = {type(indptr)} indptr = {type(indices)} indices {type(indices)} shape {type(shape)}")
 
@@ -259,6 +270,34 @@ def _reindex_and_cast(
         npt.NDArray[np.int64], index.get_indexer(ids).astype(target_dtype, copy=False)
     )
 
+def _read_csr_serial(
+    matrix: scd.SparseNDArray, obs_joinids: pa.Array, var_joinids: pa.Array
+) -> Tuple[
+    npt.NDArray[np.number],  # data
+    npt.NDArray[np.integer],  # indptr
+    npt.NDArray[np.integer],  # indices
+    Tuple[int, int],  # shape
+]:
+    print(f"data shape {matrix.shape} nnz {matrix.nnz} obs_joinids {len(obs_joinids)} var_joinids {len(var_joinids)}")
+    t1 = time.perf_counter()
+    if not isinstance(matrix, scd.SparseNDArray) or matrix.ndim != 2:
+        raise TypeError("Can only read from a 2D SparseNDArray")
+
+    all_data = matrix.read((obs_joinids, var_joinids)).tables().concat()
+
+    t2 = time.perf_counter()
+    print(f"DATA READ {(t2 - t1)*1000} ms")
+    row_indexes = all_data["soma_dim_0"]
+    col_indexes = all_data["soma_dim_1"]
+    data = all_data["soma_data"]
+    print(f"INPUT DATA {data[0:10]} ROWIDX {row_indexes[0:10]} COLIDX {col_indexes[0:10]} SHAPE {matrix.shape}")
+
+
+    csr_matrix = sparse.coo_matrix((data[0:10], (row_indexes[0:10], col_indexes[0:10])), matrix.shape).tocsr(True)
+    print("DONE")
+    print(f"RESULT DATA {csr_matrix.data[0:10]} ROWPTR {csr_matrix.indptr[0:10]} COLIDX {csr_matrix.indices[0:10]} SHAPE {csr_matrix.shape}")
+
+    return csr_matrix.data, csr_matrix.indptr, csr_matrix.indices, csr_matrix.shape
 
 def _read_csr(
     matrix: scd.SparseNDArray, obs_joinids: pa.Array, var_joinids: pa.Array
@@ -269,6 +308,8 @@ def _read_csr(
     Tuple[int, int],  # shape
 ]:
     print(f"data shape {matrix.shape} nnz {matrix.nnz} obs_joinids {len(obs_joinids)} var_joinids {len(var_joinids)}")
+    t1 = time.perf_counter()
+
     if not isinstance(matrix, scd.SparseNDArray) or matrix.ndim != 2:
         raise TypeError("Can only read from a 2D SparseNDArray")
 
@@ -283,13 +324,29 @@ def _read_csr(
             pool=pool,
         ):
             acc.append(tbl["soma_dim_0"], tbl["soma_dim_1"], tbl["soma_data"])
-        t2 = time.perf_counter()
+            data = tbl["soma_data"]
+            row_indexes = tbl["soma_dim_0"]
+            col_indexes = tbl["soma_dim_1"]
+            print(f"RUNNING CPP data {data[0:10]}")
+            print(f"RUNNING CPP row_indexes {row_indexes[0:10]}")
+            print(f"RUNNING CPP col_indexes {col_indexes}")
+            t2 = time.perf_counter()
+    # with futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
+    #     acc = _CSRAccumulator(
+    #         obs_joinids=obs_joinids, var_joinids=var_joinids, pool=pool
+    #     )
+    #     tbl = matrix.read((obs_joinids, var_joinids)).tables().concat()
+    #     acc.append(tbl["soma_dim_0"], tbl["soma_dim_1"], tbl["soma_data"])
 
         data, indptr, indices, shape = acc.finalize()
-        t3 = time.perf_counter()
-    print(f"Time for reading and appending {t2 - t1} and Time for finalizing {t3 - t2}")
-    return data, indptr, indices, shape
+        qt3 = time.perf_counter()
+    print (f"RESULT DATA {data[0:10]} ROWPTR {indptr[0:10]} COLIDX {indices[0:10]} SHAPE {shape}")
+    t2 = time.perf_counter()
+    print(f"Running python: {(t2 - t1)*1000} ms")
 
+    return data, indptr, indices, shape
+def current_milli_time():
+    return round(time.time() * 1000)
 
 def _read_csr_cpp(
     matrix: scd.SparseNDArray, obs_joinids: pa.Array, var_joinids: pa.Array
@@ -299,7 +356,6 @@ def _read_csr_cpp(
     npt.NDArray[np.integer],  # indices
     Tuple[int, int],  # shape
 ]:
-    print(f"CPP data shape {matrix.shape} nnz {matrix.nnz} obs_joinids {len(obs_joinids)} var_joinids {len(var_joinids)}")
     t1 = time.perf_counter()
     if not isinstance(matrix, scd.SparseNDArray) or matrix.ndim != 2:
         raise TypeError("Can only read from a 2D SparseNDArray")
@@ -319,16 +375,29 @@ def _read_csr_cpp(
     """
 
     t2 = time.perf_counter()
-    print(f"DATA READ {t2 - t1}")
+    print(f"DATA READ {(t2 - t1)*1000} ms")
     row_indexes = all_data["soma_dim_0"]
     col_indexes = all_data["soma_dim_1"]
     data = all_data["soma_data"]
-    print(f"RUNNING CPP {len(data)} {len(row_indexes)} {len(col_indexes)} types {type(row_indexes)} type {type(col_indexes)} data {type(data)}")
+    # print(f"RUNNING CPP data {data}")
+    # print(f"RUNNING CPP row_indexes {row_indexes}")
+    # print(f"RUNNING CPP col_indexes {col_indexes}")
+    print(f"INPUT DATA {data[0:10]} ROWIDX {row_indexes[0:10]} COLIDX {col_indexes[0:10]} SHAPE {matrix.shape}")
+
+    t3 = time.perf_counter()
+    print(f"Pre C++ time in ms: {current_milli_time()}")
 
     data, indptr, indices, shape = soma.coo_2_csr(row_indexes, col_indexes, data)
+    t4 = time.perf_counter()
+    print(f"RUNNING C++: {(t4 - t3)*1000} ms")
+    print(f"RUNNING All: {(t4 - t1)*1000} ms")
+
+    # print("DONE")
+    # print (f"RESULT DATA {data} ROWPTR {indptr} COLIDX {indices} SHAPE {shape}")
     print("DONE")
-    print (f"RESULT {data} {indptr} {indices} {shape}")
-    return data, indptr, indices, shape
+    print (f"RESULT DATA {data[0:10]} ROWPTR {indptr[0:10]} COLIDX {indices[0:10]} SHAPE {shape}")
+    return data, indptr, indices, (shape[0], matrix.shape[1])
+    #return data, indptr, indices, shape
     #     data, indptr, indices, shape = acc.finalize()
     #     t3 = time.perf_counter()
     # print(f"Time for reading and appending {t2 - t1} and Time for finalizing {t3 - t2}")
