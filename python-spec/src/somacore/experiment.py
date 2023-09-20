@@ -72,6 +72,7 @@ class Experiment(collection.BaseCollection[_RootSO], Generic[_DF, _MeasColl, _Ro
         """
         # mypy doesn't quite understand descriptors so it issues a spurious
         # error here.
+        print("Running axis query Experiment top class")
         return query.ExperimentAxisQuery(  # type: ignore[type-var]
             self,
             measurement_name,

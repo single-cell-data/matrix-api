@@ -334,8 +334,10 @@ class ExperimentAxisQuery(Generic[_Exp]):
 
         obs_table, var_table = self._read_both_axes(column_names)
 
+        print("Getting matrixes")
         x_matrices = {
-            _xname: _fast_csr.read_scipy_csr(
+            _xname:
+                _fast_csr.read_scipy_csr(
                 all_x_arrays[_xname], self.obs_joinids(), self.var_joinids()
             )
             for _xname in all_x_arrays

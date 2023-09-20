@@ -24,7 +24,10 @@ from .options import IOfN
 from .options import ResultOrder
 from .query import AxisColumnNames
 from .query import AxisQuery
+from .query import AxisQueryResult
 from .query import ExperimentAxisQuery
+from .query import CSRAccumulator
+from .query import EagerIterator
 
 try:
     # This trips up mypy since it's a generated file:
@@ -54,4 +57,7 @@ __all__ = (
     "AxisColumnNames",
     "AxisQuery",
     "ExperimentAxisQuery",
+    "CSRAccumulato"
+    "EagerIterator",
+    "AxisQueryResult",
 )

@@ -258,6 +258,7 @@ def _read_csr(
     npt.NDArray[np.integer],  # indices
     Tuple[int, int],  # shape
 ]:
+    print("Running fast csr")
     if not isinstance(matrix, scd.SparseNDArray) or matrix.ndim != 2:
         raise TypeError("Can only read from a 2D SparseNDArray")
 
