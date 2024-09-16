@@ -1,6 +1,6 @@
 anndata==0.9.2
 attrs==23.2.0
-black==24.4.2
+black==24.3.0
 cfgv==3.4.0
 click==8.1.7
 distlib==0.3.8
