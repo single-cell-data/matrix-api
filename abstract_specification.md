@@ -1253,3 +1253,4 @@ However, client code should treat the `context` object on any instantiated SOMA 
 52. Removed ⚠️-marked commentary.
 53. Added `SOMAMeasurement` to "Data Model" section, under "composed types".
 54. Allowed all N-d arrays to be sparse.
+55. Added new datatypes `SOMAScene`, `SOMAPointCloud`, `SOMAGeometryDataframe`, and `SOMAMultiscaleImage`, and bumped the API version to `0.3.0-dev`.
