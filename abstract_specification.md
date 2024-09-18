@@ -77,7 +77,6 @@ The composed types are:
 - `SOMAMeasurement`: a specialization and extension of `SOMACollection`, that contains a set of annotated observables that are common to one or more sets of measurements and/or derived calculations.
 - `SOMAScene`: a specialization and extension of `SOMACollection` that stores spatially resolved data that can be registered to a single coordinate space.
 
-
 In this document, the term `dataframe` implies something akin to an Arrow `Table` (or `RecordBatch`), R `data.frame` or Python `pandas.DataFrame`, where:
 
 - multiple columns may exist, each with a string column name.
@@ -231,7 +230,7 @@ In addition to the `soma_joinid`, every `SOMAGeometryDataFrame` must contain a c
 names of other columns in the table. The `soma_geometry` must be an index column, but the user may also specify other additional columns as
 index columns. Multiple items with the same geometry may be stored in the `SOMAGeometryDataFrame`.
 
-SOMADataFrame` is the zero or null value of the respective column data type (e.g., `Arrow.float32` defaults to 0.0, `Arrow.string` to `""`, etc).
+SOMADataFrame`is the zero or null value of the respective column data type (e.g.,`Arrow.float32`defaults to 0.0,`Arrow.string`to`""`, etc).
 
 ### SOMADenseNDArray
 
@@ -286,6 +285,7 @@ The `SOMAExperiment`, `SOMAMeasurement`, and `SOMAScene` types comprise [foundat
 In other words, every `SOMAMeasurement` has a distinct set of variables (features), and inherits common observables from its parent `SOMAExperiment`. The `obs` and `var` dataframes define the axis annotations, and their respective `soma_joinid` values are the indices for all matrixes stored in the `SOMAMeasurement`. Each `SOMAScene` stores images and spatial dataframes that join on the `obs` and var` dataframes.
 
 [comment]: <> (TODO: Replace this image with an updated one.)
+
 <figure>
     <img src="images/SOMAExperiment.png" alt="SOMAExperiment">
 </figure>
@@ -299,8 +299,8 @@ The shape of each axis (`obs` and `var`) are defined by their respective datafra
 
 The pre-defined fields of a `SOMAExperiment` object are:
 
-| Field name | Field type                                | Field description                                                                                                                                                                                                                           |
-| ---------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field name             | Field type                                | Field description                                                                                                                                                                                                                           |
+| ---------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `obs`                  | `SOMADataFrame`                           | Primary annotations on the _observation_ axis. The contents of the `soma_joinid` pseudo-column define the _observation_ index domain, also known as `obsid`. All observations for the `SOMAExperiment` _must_ be defined in this dataframe. |
 | `ms`                   | `SOMACollection[string, SOMAMeasurement]` | A collection of named measurements.                                                                                                                                                                                                         |
 | `spatial`              | `SOMACollection[string, SOMAScene]`       | A collection of named scenes.                                                                                                                                                                                                               |
@@ -308,8 +308,8 @@ The pre-defined fields of a `SOMAExperiment` object are:
 
 The `SOMAMeasurement` is a sub-element of a `SOMAExperiment`, and is otherwise a specialized `SOMACollection` with pre-defined fields:
 
-| Field name | Field type                                                    | Field description                                                                                                                                                                                                                                                                                  |
-| ---------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field name             | Field type                                                    | Field description                                                                                                                                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `var`                  | `SOMADataFrame`                                               | Primary annotations on the _variable_ axis, for variables in this measurement (i.e., annotates columns of `X`). The contents of the `soma_joinid` pseudo-column define the _variable_ index domain, also known as `varid`. All variables for this measurement _must_ be defined in this dataframe. |
 | `X`                    | `SOMACollection[string, SOMASparseNDArray\|SOMADenseNDArray]` | A collection of matrices, each containing measured feature values. Each matrix is indexed by `[obsid, varid]`. Both sparse and dense 2D arrays are supported in `X`.                                                                                                                               |
 | `obsm`                 | `SOMACollection[string, SOMASparse\|SOMADenseNDArray]`        | A collection of dense matrices containing annotations of each _obs_ row. Has the same shape as `obs`, and is indexed with `obsid`.                                                                                                                                                                 |
@@ -320,13 +320,11 @@ The `SOMAMeasurement` is a sub-element of a `SOMAExperiment`, and is otherwise a
 
 The `SOMAScene` is a sub-element of a `SOMAExperiment`, and is otherwise a specialized `SOMACollection` with pre-defined fields:
 
-| Field name | Field type                                                    | Field description                                                                                                                                                                                                                                                                                  |
-| ---------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `obsl`     | `SOMACollection[string, SOMAPointCloud\|SOMAGeometryDataFrame]`                      | Location-based annotations on the _observable_ domain. The `soma_joinid` in any item in this collection should be interpreted as the `obsid`                                                                                                                                                       |
-| `varl`     | `SOMACollection[string, SOMACollection[str, SOMAPointCloud\|SOMAGeometryDataFrame]]` | Location-based annotations on the _variable_ domain. The outer collection is keyed on the measurement names. The `soma_joinid` for items in the inner collection should be interpreted as the `varid` for the respective measurement.                                                              |
-| `img`      | `SOMACollection[string, MultiscaleImage]`                                            | A collection of multiscale images related to the experiment.                                                                                                                                                                                                                                       |
-
-
+| Field name | Field type                                                                           | Field description                                                                                                                                                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `obsl`     | `SOMACollection[string, SOMAPointCloud\|SOMAGeometryDataFrame]`                      | Location-based annotations on the _observable_ domain. The `soma_joinid` in any item in this collection should be interpreted as the `obsid`                                                                                          |
+| `varl`     | `SOMACollection[string, SOMACollection[str, SOMAPointCloud\|SOMAGeometryDataFrame]]` | Location-based annotations on the _variable_ domain. The outer collection is keyed on the measurement names. The `soma_joinid` for items in the inner collection should be interpreted as the `varid` for the respective measurement. |
+| `img`      | `SOMACollection[string, MultiscaleImage]`                                            | A collection of multiscale images related to the experiment.                                                                                                                                                                          |
 
 For the entire `SOMAExperiment`, the index domain for the elements within `obsp`, `obsm` and `X` (first dimension) are the values defined by the `obs` dataframe `soma_joinid` column. For each `SOMAMeasurement`, the index domain for `varp`, `varm` and `X` (second dimension) are the values defined by the `var` dataframe `soma_joinid` column in the same measurement. In other words, all predefined fields in the `SOMAMeasurement` share a common `obsid` and `varid` domain, which is defined by the contents of the respective columns in `obs` and `var` dataframes.
 
@@ -334,21 +332,21 @@ As with other `SOMACollections`, the `SOMAExperiment`, `SOMAMeasurement`, and `S
 
 The following naming and indexing constraints are defined for the `SOMAExperiment` and `SOMAMeasurement`:
 
-| Field name                     | Field constraints                                                                                                                                                        |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `obs`, `var`                   | Field type is a `SOMADataFrame`.                                                                                                                                         |
-| `ms`                           | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMAMeasurement`.                                                              |
-| `spatial`                      | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMAScene`.                                                                    |
-| `X`                            | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMADenseNDArray` or `SOMASparseNDArray`.                                      |
-| `obsp`, `varp`                 | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMASparseNDArray`.                                                            |
-| `obsm`, `varm`                 | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMADenseNDArray`.                                                             |
-| `obsm`, `obsp`, `varm`, `varp` | Fields may be empty collections.                                                                                                                                         |
-| `X` collection values          | All matrixes must have the shape `(O, V)`, where `O` is the domain of `obs.soma_joinid`, and `V` is the domain of `var.soma_joinid` in the containing `SOMAMeasurement`. |
-| `obsm` collection values       | All matrixes must have the shape `(O, M)`, where `M` is user-defined. The domain of the first dimension is the values of `obs.soma_joinid`.                              |
-| `obsp` collection values       | All matrixes must have the shape `(O, O)`. The domain of both dimensions is the values of `obs.soma_joinid`.                                                             |
-| `varm` collection values       | All matrixes must have the shape `(V, M)`, where `M` is user-defined. The domain of the first dimension is the values of `var.soma_joinid`.                              |
-| `varp` collection values       | All matrixes must have the shape `(V, V)`. The domain of both dimensions is the values of `var.soma_joinid`.                                                             |
-| `obs_spatial_presence`, `var_spatial_presence` | Field type is a `SOMADataFrame`. Index columns are `soma_joinid` and a string column named `scene_id` with exactly one other boolean column named `data`. |
+| Field name                                     | Field constraints                                                                                                                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `obs`, `var`                                   | Field type is a `SOMADataFrame`.                                                                                                                                         |
+| `ms`                                           | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMAMeasurement`.                                                              |
+| `spatial`                                      | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMAScene`.                                                                    |
+| `X`                                            | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMADenseNDArray` or `SOMASparseNDArray`.                                      |
+| `obsp`, `varp`                                 | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMASparseNDArray`.                                                            |
+| `obsm`, `varm`                                 | Field type is a `SOMACollection`, and each element in the collection has a value of type `SOMADenseNDArray`.                                                             |
+| `obsm`, `obsp`, `varm`, `varp`                 | Fields may be empty collections.                                                                                                                                         |
+| `X` collection values                          | All matrixes must have the shape `(O, V)`, where `O` is the domain of `obs.soma_joinid`, and `V` is the domain of `var.soma_joinid` in the containing `SOMAMeasurement`. |
+| `obsm` collection values                       | All matrixes must have the shape `(O, M)`, where `M` is user-defined. The domain of the first dimension is the values of `obs.soma_joinid`.                              |
+| `obsp` collection values                       | All matrixes must have the shape `(O, O)`. The domain of both dimensions is the values of `obs.soma_joinid`.                                                             |
+| `varm` collection values                       | All matrixes must have the shape `(V, M)`, where `M` is user-defined. The domain of the first dimension is the values of `var.soma_joinid`.                              |
+| `varp` collection values                       | All matrixes must have the shape `(V, V)`. The domain of both dimensions is the values of `var.soma_joinid`.                                                             |
+| `obs_spatial_presence`, `var_spatial_presence` | Field type is a `SOMADataFrame`. Index columns are `soma_joinid` and a string column named `scene_id` with exactly one other boolean column named `data`.                |
 
 # Functional Operations
 
@@ -660,6 +658,42 @@ A `SOMADataFrame` is indexed by one or more dataframe columns (also known as "di
 
 `SOMADataFrame` rows require unique coordinates. In other words, the read and write operations will assume that any given coordinate tuple for indexed columns uniquely identifies a single dataframe row.
 
+## SOMAPointCloud
+
+Summary of operations:
+
+| Operation                                 | Description                                           |
+| ----------------------------------------- | ----------------------------------------------------- |
+| static create(uri, ...) -> SOMAPointCloud | Create a `SOMAPointCloud`.                            |
+| get soma_type                             | Returns the constant "SOMADataFrame".                 |
+| get schema -> Arrow.Schema                | Return data schema, in the form of an Arrow `Schema`. |
+| get index_column_names -> [string, ...]   | Return index (dimension) column names.                |
+| get count -> int                          | Return the number of rows in the `SOMAPointCloud`.    |
+| read                                      | Read a subset of data from the `SOMAPointCloud`.      |
+| write                                     | Write a subset of data to the `SOMAPointCloud`.       |
+
+A `SOMADataFrame` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an index column.
+
+`SOMADataFrame` rows require unique coordinates. In other words, the read and write operations will assume that any given coordinate tuple for indexed columns uniquely identifies a single dataframe row.
+
+## SOMAGeometryDataFrame
+
+Summary of operations:
+
+| Operation                                | Description                                           |
+| ---------------------------------------- | ----------------------------------------------------- |
+| static create(uri, ...) -> SOMADataFrame | Create a `SOMADataFrame`.                             |
+| get soma_type                            | Returns the constant "SOMADataFrame".                 |
+| get schema -> Arrow.Schema               | Return data schema, in the form of an Arrow `Schema`. |
+| get index_column_names -> [string, ...]  | Return index (dimension) column names.                |
+| get count -> int                         | Return the number of rows in the `SOMADataFrame`.     |
+| read                                     | Read a subset of data from the `SOMADataFrame`.       |
+| write                                    | Write a subset of data to the `SOMADataFrame`.        |
+
+A `SOMADataFrame` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an index column.
+
+`SOMADataFrame` rows require unique coordinates. In other words, the read and write operations will assume that any given coordinate tuple for indexed columns uniquely identifies a single dataframe row.
+
 ### Operation: create()
 
 Create a new `SOMADataFrame` with user-specified URI and schema.
@@ -733,6 +767,103 @@ Parameters:
 - [`platform_config`](#platform-specific-configuration): optional storage-engine-specific configuration.
 
 All columns, including index columns and `soma_joinid` must be specified in the `values` parameter.
+
+## SOMAPointCloud
+
+Summary of operations:
+
+| Operation                                 | Description                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------ |
+| static create(uri, ...) -> SOMAPointCloud | Create a `SOMAPointCloud`.                                                     |
+| get soma_type                             | Returns the constant "SOMAPointCloud".                                         |
+| get schema -> Arrow.Schema                | Return data schema, in the form of an Arrow `Schema`.                          |
+| get coordinate_space                      | Returns the coordinate space the `SOMAPointCloud` is defined on.               |
+| get index_column_names -> [string, ...]   | Return index (dimension) column names.                                         |
+| get count -> int                          | Return the number of rows in the `SOMAPointCloud`.                             |
+| read                                      | Read a subset of data from the `SOMAPointCloud` by directly slicing the table. |
+| read_region                               | Read a subset of data from the `SOMAPointCloud` inside a geometry region.      |
+| write                                     | Write a subset of data to the `SOMAPointCloud`.                                |
+
+A `SOMAPointCloud` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation and must include the axes in the coordinate space. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an additonal index column.
+
+`SOMAPointCloud` rows do not require unique coordinates. In other words, a read operation may return multiple rows with the same values on the index columns.
+
+### Operation: create()
+
+<!-- TODO:  -->
+
+### get schema
+
+<!-- TODO:  -->
+
+### get coordinate space
+
+<!-- TODO:  -->
+
+### get index column names
+
+<!-- TODO:  -->
+
+### Operation: read()
+
+<!-- TODO:  -->
+
+### Operation: read_region()
+
+<!-- TODO:  -->
+
+### Operation: write()
+
+<!-- TODO:  -->
+
+## SOMAGeometryDataFrame
+
+Summary of operations:
+
+| Operation                                        | Description                                                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| static create(uri, ...) -> SOMAGeometryDataFrame | Create a `SOMAGeometryDataFrame`.                                                                 |
+| get soma_type                                    | Returns the constant "SOMAGeometryDataFrame".                                                     |
+| get schema -> Arrow.Schema                       | Return data schema, in the form of an Arrow `Schema`.                                             |
+| get index_column_names -> [string, ...]          | Return index (dimension) column names.                                                            |
+| get coordinate_space                             | Returns the coordinate space the `SOMAGeometryDataFrame` is defined on.                           |
+| get axis_names                                   | Returns the names of the axes for the coordinate space the `SOMAGeometryDataFrame` is defined on. |
+| get count -> int                                 | Return the number of rows in the `SOMAGeometryDataFrame`.                                         |
+| read                                             | Read a subset of data from the `SOMAGeometryDataFrame` by directly slicing the table.             |
+| read_region                                      | Read a subset of data from the `SOMAGeometryDataFrame` inside a geometry region.                  |
+| write                                            | Write a subset of data to the `SOMAGeometryDataFrame`.                                            |
+
+A `SOMAGeometryDataFrame` is indexed by one or more dataframe columns (also known as "dimensions") and a geometry column with name `soma_geometry`. The name and order of dimensions is specified at the time of creation and must include the axes for the geometries (defined by the coordinate space). [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an additonal index column.
+
+`SOMAGeometryDataframe` rows do not require unique coordinates. In other words, a read operation may return multiple rows with the same values on the index columns.
+
+### Operation: create()
+
+<!-- TODO:  -->
+
+### get schema
+
+<!-- TODO:  -->
+
+### get coordinate space
+
+<!-- TODO:  -->
+
+### get index column names
+
+<!-- TODO:  -->
+
+### Operation: read()
+
+<!-- TODO:  -->
+
+### Operation: read_region()
+
+<!-- TODO:  -->
+
+### Operation: write()
+
+<!-- TODO:  -->
 
 ## SOMADenseNDArray
 
