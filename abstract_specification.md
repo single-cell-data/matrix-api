@@ -640,6 +640,11 @@ add_new_collection(string key, CollectionType kind, string uri = "", PlatformCon
 
 - `kind`: The kind of collection to add. For instance, if `SOMAExperiment` is provided, the newly-added collection, and the returned instance, will be a `SOMAExperiment`.
 
+
+## SOMAScene
+
+<!-- TODO: Add scene operations -->
+
 ## SOMADataFrame
 
 Summary of operations:
@@ -1033,6 +1038,10 @@ Parameters:
 
 - `values`: values to be written. The type of elements in `values` must match the type of the `SOMASparseNDArray`.
 - [`platform_config`](#platform-specific-configuration): optional storage-engine-specific configuration.
+
+## SOMAMultiscaleImage
+
+<!-- TODO: Add multiscale image operations  -->
 
 ## Enumeration types
 
