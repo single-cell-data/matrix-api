@@ -520,7 +520,7 @@ soma_impl.Collection.exists("backend://host/nonexistent/path")
 
 ## SOMACollection
 
-Summary of operations on a `SOMACollection`, where `ValueType` is any SOMA-defined foundational or composed type, including `SOMACollection`, `SOMADataFrame`, `SOMADenseNDArray`, `SOMASparseNDArray` or `SOMAExperiment`:
+Summary of operations on a `SOMACollection`, where `ValueType` is any SOMA-defined foundational or composed type, including `SOMACollection`, `SOMADataFrame`, `SOMAPointCloud`, `SOMAGeometryDataFrame`, `SOMADenseNDArray`, `SOMASparseNDArray`, `SOMAMultiscaleImage`, `SOMAExperiment`, `SOMAMeasurement`, or `SOMAScene`:
 
 | Operation     | Description                                                                |
 | ------------- | -------------------------------------------------------------------------- |
@@ -539,8 +539,11 @@ In addition, `SOMACollection` supports operations to manage the contents of the 
 | del(string key)                                     | Removes the key/value from the collection. Does not delete the underlying object (value). |
 | add_new_collection(string key, ...)                 | Creates a new sub-Collection and adds it to this `SOMACollection`.                        |
 | add_new_dataframe(string key, ...)                  | Creates a new `DataFrame` and adds it to this `SOMACollection`.                           |
+| add_new_point_cloud(string key, ...)                  | Creates a new `PointCloud` and adds it to this `SOMACollection`.                           |
+| add_new_geometry_dataframe(string key, ...)                  | Creates a new `GeometryDataFrame` and adds it to this `SOMACollection`.                           |
 | add_new_dense_ndarray(string key, ...)              | Creates a new `DenseNDArray` and adds it to this `SOMACollection`.                        |
 | add_new_sparse_ndarray(string key, ...)             | Creates a new `SparseNDArray` and adds it to this `SOMACollection`.                       |
+| add_new_multiscale_image(string key, ...)             | Creates a new `MultiscaleImage` and adds it to this `SOMACollection`.                       |
 
 A `SOMACollection` also manages the lifecycle of objects directly instantiated by it.
 Objects accessed via getting a collection element, or objects created with one of the <code>add_new\_<var>object_type</var></code> methods are considered "owned" by the collection.
@@ -643,7 +646,36 @@ add_new_collection(string key, CollectionType kind, string uri = "", PlatformCon
 
 ## SOMAScene
 
-<!-- TODO: Add scene operations -->
+The `SOMAScene` contains the same base operations as a `SOMACollection` with a few additional calls for accessing and managing coordinate spaces.
+
+Summary of opertions:
+
+| Operation | Description |
+| --------- | ----------- |
+| get coordinate_space | <!-- TODO --> |
+| register_point_cloud | <!-- TODO --> |
+| register_geometry_dataframe | <!-- TODO --> |
+| register_multiscale_image | <!-- TODO --> |
+
+### Operations
+
+### get coordinate space
+
+<!-- TODO:  -->
+
+### Operation: register_point_cloud()
+
+<!-- TODO:  -->
+
+### Operation: register_geometry_dataframe()
+
+<!-- TODO:  -->
+
+### Operation: register_multiscale_image()
+
+<!-- TODO:  -->
+
+
 
 ## SOMADataFrame
 
@@ -687,12 +719,12 @@ Summary of operations:
 
 | Operation                                | Description                                           |
 | ---------------------------------------- | ----------------------------------------------------- |
-| static create(uri, ...) -> SOMADataFrame | Create a `SOMADataFrame`.                             |
-| get soma_type                            | Returns the constant "SOMADataFrame".                 |
+| static create(uri, ...) -> SOMAGemetoryDataFrame | Create a `SOMAGeometryDataFrame`.                             |
+| get soma_type                            | Returns the constant "SOMAGeometryDataFrame".                 |
 | get schema -> Arrow.Schema               | Return data schema, in the form of an Arrow `Schema`. |
 | get index_column_names -> [string, ...]  | Return index (dimension) column names.                |
-| get count -> int                         | Return the number of rows in the `SOMADataFrame`.     |
-| read                                     | Read a subset of data from the `SOMADataFrame`.       |
+| get count -> int                         | Return the number of rows in the `SOMAGeometryDataFrame`.     |
+| read                                     | Read a subset of data from the `SOMAGeometryDataFrame`.       |
 | write                                    | Write a subset of data to the `SOMADataFrame`.        |
 
 A `SOMADataFrame` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an index column.
