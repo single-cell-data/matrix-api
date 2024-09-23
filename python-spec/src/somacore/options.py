@@ -5,7 +5,7 @@ SOMA types that require them, not reimplemented by the implementing package.
 """
 
 import enum
-from typing import Any, Dict, Mapping, Optional, Sequence, TypeVar, Union
+from typing import Any, Dict, Mapping, Optional, Sequence, Tuple, TypeVar, Union
 
 import attrs
 import numpy as np
@@ -171,6 +171,7 @@ SparseDFCoords = Sequence[SparseDFCoord]
 
 SparseNDCoord = Union[
     None,
+    Tuple[int, ...],
     ValSliceOrSequence[int],
     npt.NDArray[np.integer],
     pa.IntegerArray,
