@@ -656,8 +656,6 @@ Summary of opertions:
 | register_geometry_dataframe | Adds a `CoordinateTransform` to an existing `GeometryDataFrame` in this `SOMAScene`. |
 | register_multiscale_image   | Adds a `CoordinateTransform` to an existing `MultiscaleImage` in this `SOMAScene`.   |
 
-### Operations
-
 ### Operation: register\_<var>object_type</var>
 
 Each <code>add_new\_<var>object_type</var></code> method takes an existing SOMA object in the scene, adds a transformation from the scene to the object, and returns the object. The returned object has the same `context` value as the existing scene and is [owned by the current scene](#operation-close-collection-types).
@@ -675,42 +673,6 @@ Summary of operations:
 | get count -> int                         | Return the number of rows in the `SOMADataFrame`.     |
 | read                                     | Read a subset of data from the `SOMADataFrame`.       |
 | write                                    | Write a subset of data to the `SOMADataFrame`.        |
-
-A `SOMADataFrame` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an index column.
-
-`SOMADataFrame` rows require unique coordinates. In other words, the read and write operations will assume that any given coordinate tuple for indexed columns uniquely identifies a single dataframe row.
-
-## SOMAPointCloud
-
-Summary of operations:
-
-| Operation                                 | Description                                           |
-| ----------------------------------------- | ----------------------------------------------------- |
-| static create(uri, ...) -> SOMAPointCloud | Create a `SOMAPointCloud`.                            |
-| get soma_type                             | Returns the constant "SOMADataFrame".                 |
-| get schema -> Arrow.Schema                | Return data schema, in the form of an Arrow `Schema`. |
-| get index_column_names -> [string, ...]   | Return index (dimension) column names.                |
-| get count -> int                          | Return the number of rows in the `SOMAPointCloud`.    |
-| read                                      | Read a subset of data from the `SOMAPointCloud`.      |
-| write                                     | Write a subset of data to the `SOMAPointCloud`.       |
-
-A `SOMADataFrame` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an index column.
-
-`SOMADataFrame` rows require unique coordinates. In other words, the read and write operations will assume that any given coordinate tuple for indexed columns uniquely identifies a single dataframe row.
-
-## SOMAGeometryDataFrame
-
-Summary of operations:
-
-| Operation                                        | Description                                               |
-| ------------------------------------------------ | --------------------------------------------------------- |
-| static create(uri, ...) -> SOMAGemetoryDataFrame | Create a `SOMAGeometryDataFrame`.                         |
-| get soma_type                                    | Returns the constant "SOMAGeometryDataFrame".             |
-| get schema -> Arrow.Schema                       | Return data schema, in the form of an Arrow `Schema`.     |
-| get index_column_names -> [string, ...]          | Return index (dimension) column names.                    |
-| get count -> int                                 | Return the number of rows in the `SOMAGeometryDataFrame`. |
-| read                                             | Read a subset of data from the `SOMAGeometryDataFrame`.   |
-| write                                            | Write a subset of data to the `SOMADataFrame`.            |
 
 A `SOMADataFrame` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an index column.
 
