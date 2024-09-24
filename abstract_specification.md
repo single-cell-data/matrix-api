@@ -658,7 +658,7 @@ Summary of opertions:
 
 ### Operation: register\_<var>object_type</var>
 
-Each <code>add_new\_<var>object_type</var></code> method takes an existing SOMA object in the scene, adds a transformation from the scene to the object, and returns the object. The returned object has the same `context` value as the existing scene and is [owned by the current scene](#operation-close-collection-types).
+Each <code>register\_<var>object_type</var></code> method takes an existing SOMA object in the scene, adds a transformation from the scene to the object, and returns the object. The returned object has the same `context` value as the existing scene and is [owned by the current scene](#operation-close-collection-types).
 
 ## SOMADataFrame
 
