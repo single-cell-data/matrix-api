@@ -1020,7 +1020,23 @@ Parameters:
 
 ## SOMAMultiscaleImage
 
-<!-- TODO: Add multiscale image operations  -->
+The `SOMAMultiscaleImage` contains multiple `SOMADenseNDArray` objects, but does not directly replicate the full `SOMACollection` API.
+
+| Operation                                      | Description                                        |
+| ---------------------------------------------- | -------------------------------------------------- |
+| static create(uri, ...) -> SOMAMultiscaleImage | Create a `SOMAMultiscaleImage` named with the URI. |
+| get soma_type                                  | Returns the constant "SOMAMultisclaeImage".        |
+| get coordinate_space                           |                                                    |
+| get image_type                                 |                                                    |
+| get level_count                                |                                                    |
+| get level_properties                           |                                                    |
+| add_new_level                                  |                                                    |
+| read_region                                    |                                                    |
+| axis_names                                     |                                                    |
+| get_transformation_from_level                  |                                                    |
+| get_transformation_to_level                    |                                                    |
+
+<!-- TODO: Add details about the operations -->
 
 ## Enumeration types
 
