@@ -645,20 +645,7 @@ add_new_collection(string key, CollectionType kind, string uri = "", PlatformCon
 
 ## SOMAScene
 
-The `SOMAScene` contains the same base operations as a `SOMACollection` with a few additional calls for accessing and managing coordinate spaces.
-
-Summary of opertions:
-
-| Operation                   | Description                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------------ |
-| get coordinate_space        | Returns the `CoordinateSpace` this `SOMAScene` is defined on.                        |
-| register_point_cloud        | Adds a `CoordinateTransform` to an existing `PointCloud` in this `SOMAScene`.        |
-| register_geometry_dataframe | Adds a `CoordinateTransform` to an existing `GeometryDataFrame` in this `SOMAScene`. |
-| register_multiscale_image   | Adds a `CoordinateTransform` to an existing `MultiscaleImage` in this `SOMAScene`.   |
-
-### Operation: register\_<var>object_type</var>
-
-Each <code>register\_<var>object_type</var></code> method takes an existing SOMA object in the scene, adds a transformation from the scene to the object, and returns the object. The returned object has the same `context` value as the existing scene and is [owned by the current scene](#operation-close-collection-types).
+<!-- TODO: Add the operations. -->
 
 ## SOMADataFrame
 
@@ -754,100 +741,11 @@ All columns, including index columns and `soma_joinid` must be specified in the 
 
 ## SOMAPointCloud
 
-Summary of operations:
-
-| Operation                                 | Description                                                                    |
-| ----------------------------------------- | ------------------------------------------------------------------------------ |
-| static create(uri, ...) -> SOMAPointCloud | Create a `SOMAPointCloud`.                                                     |
-| get soma_type                             | Returns the constant "SOMAPointCloud".                                         |
-| get schema -> Arrow.Schema                | Return data schema, in the form of an Arrow `Schema`.                          |
-| get coordinate_space                      | Returns the coordinate space the `SOMAPointCloud` is defined on.               |
-| get index_column_names -> [string, ...]   | Return index (dimension) column names.                                         |
-| get count -> int                          | Return the number of rows in the `SOMAPointCloud`.                             |
-| read                                      | Read a subset of data from the `SOMAPointCloud` by directly slicing the table. |
-| read_region                               | Read a subset of data from the `SOMAPointCloud` inside a geometry region.      |
-| write                                     | Write a subset of data to the `SOMAPointCloud`.                                |
-
-A `SOMAPointCloud` is indexed by one or more dataframe columns (also known as "dimensions"). The name and order of dimensions is specified at the time of creation and must include the axes in the coordinate space. [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an additonal index column.
-
-`SOMAPointCloud` rows do not require unique coordinates. In other words, a read operation may return multiple rows with the same values on the index columns.
-
-### Operation: create()
-
-<!-- TODO:  -->
-
-### get schema
-
-<!-- TODO:  -->
-
-### get coordinate space
-
-<!-- TODO:  -->
-
-### get index column names
-
-<!-- TODO:  -->
-
-### Operation: read()
-
-<!-- TODO:  -->
-
-### Operation: read_region()
-
-<!-- TODO:  -->
-
-### Operation: write()
-
-<!-- TODO:  -->
+<!-- TODO: Add the operations. -->
 
 ## SOMAGeometryDataFrame
 
-Summary of operations:
-
-| Operation                                        | Description                                                                                       |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| static create(uri, ...) -> SOMAGeometryDataFrame | Create a `SOMAGeometryDataFrame`.                                                                 |
-| get soma_type                                    | Returns the constant "SOMAGeometryDataFrame".                                                     |
-| get schema -> Arrow.Schema                       | Return data schema, in the form of an Arrow `Schema`.                                             |
-| get index_column_names -> [string, ...]          | Return index (dimension) column names.                                                            |
-| get coordinate_space                             | Returns the coordinate space the `SOMAGeometryDataFrame` is defined on.                           |
-| get axis_names                                   | Returns the names of the axes for the coordinate space the `SOMAGeometryDataFrame` is defined on. |
-| get count -> int                                 | Return the number of rows in the `SOMAGeometryDataFrame`.                                         |
-| read                                             | Read a subset of data from the `SOMAGeometryDataFrame` by directly slicing the table.             |
-| read_region                                      | Read a subset of data from the `SOMAGeometryDataFrame` inside a geometry region.                  |
-| write                                            | Write a subset of data to the `SOMAGeometryDataFrame`.                                            |
-
-A `SOMAGeometryDataFrame` is indexed by one or more dataframe columns (also known as "dimensions") and a geometry column with name `soma_geometry`. The name and order of dimensions is specified at the time of creation and must include the axes for the geometries (defined by the coordinate space). [Slices](#indexing-and-slicing) are addressable by the user-specified dimensions. The `soma_joinid` column may be specified as an additonal index column.
-
-`SOMAGeometryDataframe` rows do not require unique coordinates. In other words, a read operation may return multiple rows with the same values on the index columns.
-
-### Operation: create()
-
-<!-- TODO:  -->
-
-### get schema
-
-<!-- TODO:  -->
-
-### get coordinate space
-
-<!-- TODO:  -->
-
-### get index column names
-
-<!-- TODO:  -->
-
-### Operation: read()
-
-<!-- TODO:  -->
-
-### Operation: read_region()
-
-<!-- TODO:  -->
-
-### Operation: write()
-
-<!-- TODO:  -->
+<!-- TODO: Add the operations. -->
 
 ## SOMADenseNDArray
 
@@ -1020,23 +918,7 @@ Parameters:
 
 ## SOMAMultiscaleImage
 
-The `SOMAMultiscaleImage` contains multiple `SOMADenseNDArray` objects, but does not directly replicate the full `SOMACollection` API.
-
-| Operation                                      | Description                                        |
-| ---------------------------------------------- | -------------------------------------------------- |
-| static create(uri, ...) -> SOMAMultiscaleImage | Create a `SOMAMultiscaleImage` named with the URI. |
-| get soma_type                                  | Returns the constant "SOMAMultisclaeImage".        |
-| get coordinate_space                           |                                                    |
-| get image_type                                 |                                                    |
-| get level_count                                |                                                    |
-| get level_properties                           |                                                    |
-| add_new_level                                  |                                                    |
-| read_region                                    |                                                    |
-| axis_names                                     |                                                    |
-| get_transformation_from_level                  |                                                    |
-| get_transformation_to_level                    |                                                    |
-
-<!-- TODO: Add details about the operations -->
+<!-- TODO: Add the operations. -->
 
 ## Enumeration types
 
