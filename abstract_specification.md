@@ -67,7 +67,7 @@ The foundational types are:
 
 - `SOMACollection`: a string-keyed container (key-value map) of other SOMA data types, e.g., `SOMADataFrame`, `SOMASparseNDArray`, and `SOMACollection`.
 - `SOMADataFrame`: a multi-column table -- essentially a dataframe with indexing on user-specified columns.
-- `SOMAGeometryDataFrame` and `SOMAPointCloud`: multi-column tables for storing spatial indexed dataframes, available for point or full geometry instantiations.
+- `SOMAGeometryDataFrame` and `SOMAPointCloudDataFrame`: multi-column tables for storing spatial indexed dataframes, available for point or full geometry instantiations.
 - `SOMADenseNDArray` and `SOMASparseNDArray`: an offset-addressed (zero-based), single-type N-D array, available in either sparse or dense instantiations.
 - `SOMAMultiscaleImage`: a multiscale image pyramid that stores multiple levels of `SOMADenseNDArray`s.
 
@@ -210,15 +210,15 @@ The default "fill" value for `SOMADataFrame` is the zero or null value of the re
 
 Most language-specific bindings will provide convertors between `SOMADataFrame` and other convenient data structures, such as Python `pandas.DataFrame`, R `data.frame`.
 
-### SOMAPointCloud
+### SOMAPointCloudDataFrame
 
-`SOMAPointCloud` is a multi-column table with a user-defined schema, defining the number of columns and their respective column name and value type. The schema is expressed as an Arrow `Schema`.
+`SOMAPointCloudDataFrame` is a multi-column table with a user-defined schema, defining the number of columns and their respective column name and value type. The schema is expressed as an Arrow `Schema`.
 
-Like the `SOMADataFrame`, every `SOMAPointCloud` must contain a column called `soma_joinid` of type `int64` and domain `[0, 2^63-1]`. The `soma_joinid` is intended to act as a joint key for other objects, such as `SOMASparseNDArray`. There may be multiple items with the same `soma_joinid` stored in the `SOMAPointCloud`.
+Like the `SOMADataFrame`, every `SOMAPointCloudDataFrame` must contain a column called `soma_joinid` of type `int64` and domain `[0, 2^63-1]`. The `soma_joinid` is intended to act as a joint key for other objects, such as `SOMASparseNDArray`. There may be multiple items with the same `soma_joinid` stored in the `SOMAPointCloudDataFrame`.
 
-In addition to the `soma_joinid`, the user must define spatial columns, referred to as "spatial axes", that define the "points" in the array. Each spatial axis must be either an integer or floating type, and they must all have the same type. The user may specify a restriced domain for spatial axes or allow the axes to support the entire valid type range. The spatial axes must be index columns for the `SOMAPointCloud`, but the user may also specify other columns as index columns.
+In addition to the `soma_joinid`, the user must define spatial columns, referred to as "spatial axes", that define the "points" in the array. Each spatial axis must be either an integer or floating type, and they must all have the same type. The user may specify a restriced domain for spatial axes or allow the axes to support the entire valid type range. The spatial axes must be index columns for the `SOMAPointCloudDataFrame`, but the user may also specify other columns as index columns.
 
-The default "fill" value for `SOMAPointCloud` is the zero or null value of the respective column data type (e.g., `Arrow.float32` defaults to 0.0, `Arrow.string` to `""`, etc).
+The default "fill" value for `SOMAPointCloudDataFrame` is the zero or null value of the respective column data type (e.g., `Arrow.float32` defaults to 0.0, `Arrow.string` to `""`, etc).
 
 ### SOMAGeometryDataFrame
 
@@ -320,11 +320,11 @@ The `SOMAMeasurement` is a sub-element of a `SOMAExperiment`, and is otherwise a
 
 The `SOMAScene` is a sub-element of a `SOMAExperiment`, and is otherwise a specialized `SOMACollection` with pre-defined fields:
 
-| Field name | Field type                                                                           | Field description                                                                                                                                                                                                                     |
-| ---------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `obsl`     | `SOMACollection[string, SOMAPointCloud\|SOMAGeometryDataFrame]`                      | Location-based annotations on the _observable_ domain. The `soma_joinid` in any item in this collection should be interpreted as the `obsid`                                                                                          |
-| `varl`     | `SOMACollection[string, SOMACollection[str, SOMAPointCloud\|SOMAGeometryDataFrame]]` | Location-based annotations on the _variable_ domain. The outer collection is keyed on the measurement names. The `soma_joinid` for items in the inner collection should be interpreted as the `varid` for the respective measurement. |
-| `img`      | `SOMACollection[string, MultiscaleImage]`                                            | A collection of multiscale images related to the experiment.                                                                                                                                                                          |
+| Field name | Field type                                                                                    | Field description                                                                                                                                                                                                                     |
+| ---------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `obsl`     | `SOMACollection[string, SOMAPointCloudDataFrame\|SOMAGeometryDataFrame]`                      | Location-based annotations on the _observable_ domain. The `soma_joinid` in any item in this collection should be interpreted as the `obsid`                                                                                          |
+| `varl`     | `SOMACollection[string, SOMACollection[str, SOMAPointCloudDataFrame\|SOMAGeometryDataFrame]]` | Location-based annotations on the _variable_ domain. The outer collection is keyed on the measurement names. The `soma_joinid` for items in the inner collection should be interpreted as the `varid` for the respective measurement. |
+| `img`      | `SOMACollection[string, MultiscaleImage]`                                                     | A collection of multiscale images related to the experiment.                                                                                                                                                                          |
 
 For the entire `SOMAExperiment`, the index domain for the elements within `obsp`, `obsm` and `X` (first dimension) are the values defined by the `obs` dataframe `soma_joinid` column. For each `SOMAMeasurement`, the index domain for `varp`, `varm` and `X` (second dimension) are the values defined by the `var` dataframe `soma_joinid` column in the same measurement. In other words, all predefined fields in the `SOMAMeasurement` share a common `obsid` and `varid` domain, which is defined by the contents of the respective columns in `obs` and `var` dataframes.
 
@@ -520,7 +520,7 @@ soma_impl.Collection.exists("backend://host/nonexistent/path")
 
 ## SOMACollection
 
-Summary of operations on a `SOMACollection`, where `ValueType` is any SOMA-defined foundational or composed type, including `SOMACollection`, `SOMADataFrame`, `SOMAPointCloud`, `SOMAGeometryDataFrame`, `SOMADenseNDArray`, `SOMASparseNDArray`, `SOMAMultiscaleImage`, `SOMAExperiment`, `SOMAMeasurement`, or `SOMAScene`:
+Summary of operations on a `SOMACollection`, where `ValueType` is any SOMA-defined foundational or composed type, including `SOMACollection`, `SOMADataFrame`, `SOMAPointCloudDataFrame`, `SOMAGeometryDataFrame`, `SOMADenseNDArray`, `SOMASparseNDArray`, `SOMAMultiscaleImage`, `SOMAExperiment`, `SOMAMeasurement`, or `SOMAScene`:
 
 | Operation     | Description                                                                |
 | ------------- | -------------------------------------------------------------------------- |
@@ -539,11 +539,8 @@ In addition, `SOMACollection` supports operations to manage the contents of the 
 | del(string key)                                     | Removes the key/value from the collection. Does not delete the underlying object (value). |
 | add_new_collection(string key, ...)                 | Creates a new sub-Collection and adds it to this `SOMACollection`.                        |
 | add_new_dataframe(string key, ...)                  | Creates a new `DataFrame` and adds it to this `SOMACollection`.                           |
-| add_new_point_cloud(string key, ...)                | Creates a new `PointCloud` and adds it to this `SOMACollection`.                          |
-| add_new_geometry_dataframe(string key, ...)         | Creates a new `GeometryDataFrame` and adds it to this `SOMACollection`.                   |
 | add_new_dense_ndarray(string key, ...)              | Creates a new `DenseNDArray` and adds it to this `SOMACollection`.                        |
 | add_new_sparse_ndarray(string key, ...)             | Creates a new `SparseNDArray` and adds it to this `SOMACollection`.                       |
-| add_new_multiscale_image(string key, ...)           | Creates a new `MultiscaleImage` and adds it to this `SOMACollection`.                     |
 
 A `SOMACollection` also manages the lifecycle of objects directly instantiated by it.
 Objects accessed via getting a collection element, or objects created with one of the <code>add_new\_<var>object_type</var></code> methods are considered "owned" by the collection.
@@ -739,7 +736,7 @@ Parameters:
 
 All columns, including index columns and `soma_joinid` must be specified in the `values` parameter.
 
-## SOMAPointCloud
+## SOMAPointCloudDataFrame
 
 <!-- TODO: Add the operations. -->
 
@@ -1270,4 +1267,4 @@ However, client code should treat the `context` object on any instantiated SOMA 
 52. Removed ⚠️-marked commentary.
 53. Added `SOMAMeasurement` to "Data Model" section, under "composed types".
 54. Allowed all N-d arrays to be sparse.
-55. Added new datatypes `SOMAScene`, `SOMAPointCloud`, `SOMAGeometryDataframe`, and `SOMAMultiscaleImage`, and bumped the API version to `0.3.0-dev`.
+55. Added new datatypes `SOMAScene`, `SOMAPointCloudDataFrame`, `SOMAGeometryDataframe`, and `SOMAMultiscaleImage`, and bumped the API version to `0.3.0-dev`.
