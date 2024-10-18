@@ -284,11 +284,17 @@ The `SOMAExperiment`, `SOMAMeasurement`, and `SOMAScene` types comprise [foundat
 
 In other words, every `SOMAMeasurement` has a distinct set of variables (features), and inherits common observables from its parent `SOMAExperiment`. The `obs` and `var` dataframes define the axis annotations, and their respective `soma_joinid` values are the indices for all matrixes stored in the `SOMAMeasurement`. Each `SOMAScene` stores images and spatial dataframes that join on the `obs` and var` dataframes.
 
-[comment]: <> (TODO: Replace this image with an updated one.)
-
 <figure>
     <img src="images/SOMAExperiment.png" alt="SOMAExperiment">
 </figure>
+
+<figure>
+   <img src="images/SOMAMeasurement.png" alt="SOMAMeasurment">
+</figure>
+
+<figure>
+   <img src="images/SOMAScene.png" alt="SOMAScene">
+</fiture>
 
 These types have pre-defined fields, each of which have well-defined naming, typing, dimensionality and indexing constraints. Other user-defined data may be added to a `SOMAExperiment`, `SOMAMeasurement`, or `SOMAScene`, as each is a specialization of the `SOMACollection`. Implementations _should_ enforce the constraints on these pre-defined fields. Pre-defined fields are distinguished from other user-defined collection elements, where no schema or indexing semantics are presumed or enforced.
 
