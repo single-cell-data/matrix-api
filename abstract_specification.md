@@ -216,7 +216,7 @@ Most language-specific bindings will provide convertors between `SOMADataFrame` 
 
 Like the `SOMADataFrame`, every `SOMAPointCloudDataFrame` must contain a column called `soma_joinid` of type `int64` and domain `[0, 2^63-1]`. The `soma_joinid` is intended to act as a joint key for other objects, such as `SOMASparseNDArray`. There may be multiple items with the same `soma_joinid` stored in the `SOMAPointCloudDataFrame`.
 
-In addition to the `soma_joinid`, the user must define spatial columns, referred to as "spatial axes", that define the "points" in the array. Each spatial axis must be either an integer or floating type, and they must all have the same type. The user may specify a restriced domain for spatial axes or allow the axes to support the entire valid type range. The spatial axes must be index columns for the `SOMAPointCloudDataFrame`, but the user may also specify other columns as index columns.
+In addition to the `soma_joinid`, the user must define spatial columns, referred to as "spatial axes", that define the "points" in the array. Each spatial axis must be either an integer or floating-point type, and they must all have the same type. The user may specify a restriced domain for spatial axes or allow the axes to support the entire valid type range. The spatial axes must be index columns for the `SOMAPointCloudDataFrame`, but the user may also specify other columns as index columns.
 
 The default "fill" value for `SOMAPointCloudDataFrame` is the zero or null value of the respective column data type (e.g., `Arrow.float32` defaults to 0.0, `Arrow.string` to `""`, etc).
 
@@ -256,7 +256,7 @@ All dimensions must have a positive (in particular, non-zero) length, and there 
 
 The default "fill" value for `SOMASparseNDArray` is the zero or null value of the array type (e.g., Arrow.float32 defaults to 0.0).
 
-> ℹ️ **Note**: on TileDB this is an sparse array with `N` `int64` dimensions of domain `[0, maxInt64)`, and a single attribute.
+> ℹ️ **Note**: on TileDB this is a sparse array with `N` `int64` dimensions of domain `[0, maxInt64)`, and a single attribute.
 
 ### SOMAMultiscaleImage
 
@@ -266,7 +266,7 @@ The `SOMAMultiscaleImage` must have a fixed image axis order (e.g. channel-heigh
 
 #### SOMAMultiscaleImage entry URIs
 
-A `SOMAMultiscaleImage` refers to its elements by URI. Like the `SOMACollection`, its reference to an element by **absolute** URI or **relative** URI. See above for a more complete description of **absolute** and **relative** URI behavior.
+A `SOMAMultiscaleImage` refers to its elements by URI. Like the `SOMACollection`, it refers to an element by **absolute** URI or **relative** URI. See above for a more complete description of **absolute** and **relative** URI behavior.
 
 ## Composed Types
 
