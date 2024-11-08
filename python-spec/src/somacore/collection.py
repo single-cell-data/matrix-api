@@ -13,9 +13,7 @@ from typing import (
 import pyarrow as pa
 from typing_extensions import Final, Self
 
-from . import base
-from . import data
-from . import options
+from . import base, data, options
 
 _Elem = TypeVar("_Elem", bound=base.SOMAObject)
 """Element Type for a SOMA collection."""

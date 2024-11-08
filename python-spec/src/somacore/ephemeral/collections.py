@@ -9,15 +9,17 @@ from typing import (
 
 from typing_extensions import Literal, Self
 
-from .. import base
-from .. import collection
-from .. import coordinates
-from .. import data
-from .. import experiment
-from .. import measurement
-from .. import options
-from .. import scene
-from .. import spatial
+from .. import (
+    base,
+    collection,
+    coordinates,
+    data,
+    experiment,
+    measurement,
+    options,
+    scene,
+    spatial,
+)
 
 _Elem = TypeVar("_Elem", bound=base.SOMAObject)
 

@@ -4,10 +4,7 @@ from typing import Generic, TypeVar
 
 from typing_extensions import Final
 
-from . import _mixin
-from . import base
-from . import collection
-from . import data
+from . import _mixin, base, collection, data
 
 _DF = TypeVar("_DF", bound=data.DataFrame)
 """A particular implementation of DataFrame."""

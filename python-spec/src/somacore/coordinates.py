@@ -10,8 +10,7 @@ import numpy as np
 import numpy.typing as npt
 from typing_extensions import Self
 
-from .types import str_or_seq_length
-from .types import to_string_tuple
+from .types import str_or_seq_length, to_string_tuple
 
 
 @attrs.define(frozen=True)

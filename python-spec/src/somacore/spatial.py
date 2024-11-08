@@ -16,10 +16,7 @@ from typing import (
 import pyarrow as pa
 from typing_extensions import Final, Self
 
-from . import base
-from . import coordinates
-from . import data
-from . import options
+from . import base, coordinates, data, options
 
 _DenseND = TypeVar("_DenseND", bound=data.DenseNDArray)
 """A particular implementation of a collection of DenseNDArrays."""

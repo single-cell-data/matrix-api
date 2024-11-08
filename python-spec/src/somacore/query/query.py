@@ -25,13 +25,9 @@ import pyarrow.compute as pacomp
 from scipy import sparse
 from typing_extensions import Literal, Protocol, Self, TypedDict
 
-from .. import data
-from .. import measurement
-from .. import options
+from .. import data, measurement, options
 from .. import types as base_types
-from . import _fast_csr
-from . import axis
-from . import types
+from . import _fast_csr, axis, types
 
 _RO_AUTO = options.ResultOrder.AUTO
 

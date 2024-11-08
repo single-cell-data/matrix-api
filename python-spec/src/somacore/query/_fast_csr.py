@@ -10,8 +10,7 @@ import pyarrow as pa
 from scipy import sparse
 
 from .. import data as scd
-from . import _eager_iter
-from . import types
+from . import _eager_iter, types
 
 
 def read_csr(

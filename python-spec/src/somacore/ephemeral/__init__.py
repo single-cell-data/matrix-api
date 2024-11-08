@@ -5,10 +5,7 @@ ad-hoc analysis of multiple datasets without having to create a stored
 Collection.
 """
 
-from .collections import Collection
-from .collections import Experiment
-from .collections import Measurement
-from .collections import Scene
+from .collections import Collection, Experiment, Measurement, Scene
 
 __all__ = (
     "Collection",

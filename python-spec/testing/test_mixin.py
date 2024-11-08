@@ -1,7 +1,6 @@
 import unittest
 
-from somacore import _mixin
-from somacore import ephemeral
+from somacore import _mixin, ephemeral
 
 
 class TestItem(unittest.TestCase):

@@ -21,8 +21,7 @@ from typing import (
 import pyarrow as pa
 from typing_extensions import Final, Literal, Self
 
-from . import base
-from . import options
+from . import base, options
 
 _RO_AUTO = options.ResultOrder.AUTO
 

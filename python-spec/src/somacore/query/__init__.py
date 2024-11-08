@@ -1,5 +1,4 @@
-from . import axis
-from . import query
+from . import axis, query
 
 ExperimentAxisQuery = query.ExperimentAxisQuery
 AxisColumnNames = query.AxisColumnNames

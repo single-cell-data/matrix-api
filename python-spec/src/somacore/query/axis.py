@@ -4,8 +4,7 @@ import attrs
 import numpy as np
 import pyarrow as pa
 
-from .. import options
-from .. import types
+from .. import options, types
 
 
 def _canonicalize_coords(

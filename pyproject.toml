@@ -48,9 +48,7 @@ target-version = "py39"
 fix = true
 
 [tool.ruff.lint.isort]
-force-single-line = true
 known-first-party = ["somacore"]
-single-line-exclusions = ["typing", "typing_extensions"]
 
 [tool.mypy]
 check_untyped_defs = true

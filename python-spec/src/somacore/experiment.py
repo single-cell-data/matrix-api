@@ -2,13 +2,7 @@ from typing import Generic, Optional, TypeVar
 
 from typing_extensions import Final, Self
 
-from . import _mixin
-from . import base
-from . import collection
-from . import data
-from . import measurement
-from . import query
-from . import scene
+from . import _mixin, base, collection, data, measurement, query, scene
 
 _DF = TypeVar("_DF", bound=data.DataFrame)
 """An implementation of a DataFrame."""

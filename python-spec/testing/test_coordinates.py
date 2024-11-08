@@ -1,13 +1,15 @@
 import numpy as np
 import pytest
 
-from somacore import AffineTransform
-from somacore import Axis
-from somacore import CoordinateSpace
-from somacore import CoordinateTransform
-from somacore import IdentityTransform
-from somacore import ScaleTransform
-from somacore import UniformScaleTransform
+from somacore import (
+    AffineTransform,
+    Axis,
+    CoordinateSpace,
+    CoordinateTransform,
+    IdentityTransform,
+    ScaleTransform,
+    UniformScaleTransform,
+)
 
 
 def check_transform_is_equal(

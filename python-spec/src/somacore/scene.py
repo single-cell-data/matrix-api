@@ -5,11 +5,7 @@ from typing import Generic, Optional, Sequence, TypeVar, Union
 
 from typing_extensions import Final
 
-from . import _mixin
-from . import base
-from . import collection
-from . import coordinates
-from . import spatial
+from . import _mixin, base, collection, coordinates, spatial
 
 _MultiscaleImage = TypeVar("_MultiscaleImage", bound=spatial.MultiscaleImage)
 """A particular implementation of a multiscale image."""

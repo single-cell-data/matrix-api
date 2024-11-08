@@ -9,8 +9,7 @@ from typing import Any, ClassVar, MutableMapping, Optional
 
 from typing_extensions import LiteralString, Self
 
-from . import options
-from . import types
+from . import options, types
 
 
 class SOMAObject(metaclass=abc.ABCMeta):
